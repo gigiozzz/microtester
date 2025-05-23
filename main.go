@@ -7,15 +7,17 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
 
 const (
-	LISTEN_ADDR_KEY     string = "LISTEN_ADDR"
-	LISTEN_ADDR_DEFAULT string = ":8080"
-	HELATH_PATH_KEY     string = "HEALTH_PATH"
-	HELATH_PATH_DEFAULT string = "/healthz"
+	LISTEN_ADDR_KEY            string = "LISTEN_ADDR"
+	LISTEN_ADDR_DEFAULT        string = ":8080"
+	HELATH_PATH_KEY            string = "HEALTH_PATH"
+	HELATH_PATH_DEFAULT        string = "/healthz"
+	CUSTOM_STATUS_PATH_DEFAULT string = "/api/custom-status"
 )
 
 func main() {
@@ -29,6 +31,8 @@ func main() {
 	*/
 	// Health check
 	mux.HandleFunc(getEnvStringOrDefault(HELATH_PATH_KEY, HELATH_PATH_DEFAULT), healthHandler)
+
+	mux.HandleFunc(CUSTOM_STATUS_PATH_DEFAULT, customStatusHandler)
 
 	server := &http.Server{
 		Addr:    getEnvStringOrDefault(LISTEN_ADDR_KEY, LISTEN_ADDR_DEFAULT),
@@ -75,6 +79,42 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sendJSON(w, response, http.StatusOK)
+}
+
+func customStatusHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	query := r.URL.Query()
+	success := false
+	successStr := "fail"
+	status := http.StatusInternalServerError
+	statusStr := query.Get("status")
+	if statusStr != "" {
+		statusInt, err := strconv.Atoi(statusStr)
+		if err == nil && http.StatusText(statusInt) != "" {
+			status = statusInt
+			success = true
+			successStr = "ok"
+		} else {
+			log.Printf("error converting '%s' err:'%s' or not valid number %d", statusStr, err, statusInt)
+		}
+	} else {
+		status = http.StatusOK
+		success = true
+		successStr = "ok"
+	}
+
+	response := map[string]any{
+		"Success": success,
+		"Data": map[string]interface{}{
+			"status":    successStr,
+			"timestamp": time.Now().Unix(),
+		},
+	}
+
+	sendJSON(w, response, status)
 }
 
 func getEnvStringOrDefault(key, defaultvalue string) string {
