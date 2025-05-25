@@ -9,14 +9,6 @@ import (
 	"time"
 )
 
-const (
-	LISTEN_ADDR_KEY            string = "LISTEN_ADDR"
-	LISTEN_ADDR_DEFAULT        string = ":8080"
-	HELATH_PATH_KEY            string = "HEALTH_PATH"
-	HELATH_PATH_DEFAULT        string = "/healthz"
-	CUSTOM_STATUS_PATH_DEFAULT string = "/api/custom-status"
-)
-
 // Health check handler
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -106,4 +98,66 @@ func geEnvVars() map[string]string {
 	}
 
 	return envMap
+}
+
+func DebugRequestHandler(w http.ResponseWriter, r *http.Request) {
+	// Create detailed request info
+	requestInfo := map[string]interface{}{
+		"method":           r.Method,
+		"url":              r.URL.String(),
+		"path":             r.URL.Path,
+		"raw_query":        r.URL.RawQuery,
+		"host":             r.Host,
+		"remote_addr":      r.RemoteAddr,
+		"user_agent":       r.UserAgent(),
+		"headers":          make(map[string]interface{}),
+		"query_parameters": make(map[string]interface{}),
+		//"query_stats":      make(map[string]interface{}),
+	}
+
+	// Pretty print headers
+	headers := make(map[string]interface{})
+	for name, values := range r.Header {
+		if len(values) == 1 {
+			headers[name] = values[0]
+		} else {
+			headers[name] = values
+		}
+	}
+	requestInfo["headers"] = headers
+
+	// Parse all query parameters
+	query := r.URL.Query()
+
+	// Pretty print query parameters with detailed info
+	queryParams := make(map[string]interface{})
+	totalParams := 0
+
+	for key, values := range query {
+		totalParams++
+		if len(values) == 1 {
+			queryParams[key] = map[string]interface{}{
+				"value": values[0],
+				"type":  "single",
+				"count": 1,
+			}
+		} else {
+			queryParams[key] = map[string]interface{}{
+				"values": values,
+				"type":   "multiple",
+				"count":  len(values),
+			}
+		}
+	}
+
+	requestInfo["query_parameters"] = queryParams
+
+	response := map[string]any{
+		"Success": true,
+		"Data": map[string]interface{}{
+			"request_info": requestInfo,
+			"timestamp":    time.Now().Unix(),
+		},
+	}
+	sendJSON(w, response, http.StatusOK)
 }

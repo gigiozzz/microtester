@@ -14,17 +14,6 @@ func GetEnvStringOrDefault(key, defaultvalue string) string {
 	return v
 }
 
-// ResponseWriter wrapper to capture status code
-type responseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (rw *responseWriter) WriteHeader(code int) {
-	rw.statusCode = code
-	rw.ResponseWriter.WriteHeader(code)
-}
-
 // Helper function to send JSON responses
 func sendJSON(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
