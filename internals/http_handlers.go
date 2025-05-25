@@ -1,6 +1,7 @@
 package internals
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -149,8 +150,39 @@ func DebugRequestHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
 	requestInfo["query_parameters"] = queryParams
+
+	// Pretty print to console as well
+	fmt.Println("\n🔍 REQUEST DEBUG INFO")
+	fmt.Println("=====================")
+	fmt.Printf("Method: %s\n", r.Method)
+	fmt.Printf("URL: %s\n", r.URL.String())
+	fmt.Printf("Path: %s\n", r.URL.Path)
+	fmt.Printf("Raw Query: %s\n", r.URL.RawQuery)
+	fmt.Printf("Remote Address: %s\n", r.RemoteAddr)
+
+	fmt.Println("\n📋 Query Parameters:")
+	if totalParams == 0 {
+		fmt.Println("  (no parameters)")
+	} else {
+		for key, values := range query {
+			if len(values) == 1 {
+				fmt.Printf("  %-15s = %s\n", key, values[0])
+			} else {
+				fmt.Printf("  %-15s = %v (array with %d values)\n", key, values, len(values))
+			}
+		}
+	}
+
+	fmt.Println("\n📡 Headers:")
+	for name, values := range r.Header {
+		if len(values) == 1 {
+			fmt.Printf("  %-20s = %s\n", name, values[0])
+		} else {
+			fmt.Printf("  %-20s = %v\n", name, values)
+		}
+	}
+	fmt.Println("=====================")
 
 	response := map[string]any{
 		"Success": true,
