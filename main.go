@@ -20,6 +20,7 @@ const (
 	CUSTOM_STATUS_PATH  string = "/api/custom-status"
 	ENVIRONMENTS_PATH   string = "/api/environments"
 	DEBUG_REQUEST_PATH  string = "/api/debug-request"
+	TIMEOUT_PATH        string = "/api/timeout"
 )
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 	mux.HandleFunc(CUSTOM_STATUS_PATH, internals.CustomStatusHandler)
 	mux.HandleFunc(ENVIRONMENTS_PATH, internals.EnvListHandler)
 	mux.HandleFunc(DEBUG_REQUEST_PATH, internals.DebugRequestHandler)
+	mux.HandleFunc(TIMEOUT_PATH, internals.TimeoutHandler)
+	// endpoint for OOM error
 
 	server := &http.Server{
 		Addr:    internals.GetEnvStringOrDefault(LISTEN_ADDR_KEY, LISTEN_ADDR_DEFAULT),

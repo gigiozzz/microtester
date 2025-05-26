@@ -193,3 +193,25 @@ func DebugRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	sendJSON(w, response, http.StatusOK)
 }
+
+func TimeoutHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	timeout := query.Get("timeout")
+	sleepTime, err := strconv.Atoi(timeout)
+	if err != nil {
+
+	}
+	start := time.Now()
+	time.Sleep(time.Duration(sleepTime) * time.Second)
+	end := time.Now()
+
+	response := map[string]any{
+		"Success": true,
+		"Data": map[string]interface{}{
+			"status":    "ok",
+			"duration":  fmt.Sprintf("%.3fs", end.Sub(start).Seconds()),
+			"timestamp": time.Now().Unix(),
+		},
+	}
+	sendJSON(w, response, http.StatusOK)
+}
