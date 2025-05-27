@@ -87,11 +87,10 @@ curl http://localhost:8080/healthz
 # Response: {"Data": { "status": "ok", "timestamp": 1748295254 }, "Success": true}
 ```
 
-### Test with Payload
+### HTTP Request Debugging
 ```bash
-curl -X POST http://localhost:8080/echo \
-  -H "Content-Type: application/json" \
-  -d '{"test": "data"}'
+curl http://localhost:8080/debug-request
+# The response body and the server logs will show detailed information about the HTTP request including all parameters, headers, and metadata.
 ```
 
 ### Environment Debugging
@@ -106,29 +105,21 @@ curl http://localhost:8080/api/timeout?timeout=15
 # Waits 15 seconds before responding
 ```
 
-### Testing Different HTTP Methods
-
+### Testing Different HTTP Statuses
 ```bash
-# POST request (will return method not allowed, but you'll see the request details in logs)
-curl -X POST "http://localhost:3000/api/v1/debug/request?method=post"
-
-# The debug endpoint only accepts GET, but server logs will show all request details
+curl "http://localhost:8080/api/custom-status?status=405"
+# Returns 405 http status
 ```
 
 ### Testing in Kubernetes
-
 ```bash
 # Port forward to access locally
-kubectl port-forward service/microtester-service 3000:80
+kubectl port-forward service/microtester-service 8080:80
 
 # Test the service
-curl "http://localhost:3000/api/v1/debug/request?k8s=test&cluster=local"
+curl "http://localhost:8080/api/api/environments"
 ```
-### Request Debugging
-```http
-GET /api/v1/debug/request
-```
-Inspects and returns detailed information about the HTTP request including all parameters, headers, and metadata.
+
 
 ## 🔧 Configuration
 
@@ -136,8 +127,8 @@ Inspects and returns detailed information about the HTTP request including all p
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PORT` | `3000` | Server port |
-
+| `LISTEN_ADDR` | `:8080` | Server address and port toi listen to |
+| `HEALTH_PATH` | `/healthz` | The path to use for a Kubernetes liveness endpoint |
 
 
 ## 📋 API Endpoints
@@ -145,42 +136,16 @@ Inspects and returns detailed information about the HTTP request including all p
 ### Health & Status
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/health` | GET | Basic health check endpoint |
-
+| `/healthz` | GET | Basic health check endpoint |
 
 ### Testing & Debugging
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/echo` | ALL | Echo back request details (headers, body, method) |
-| `/test/get` | GET | Test GET requests with query parameters |
-| `/test/post` | POST | Test POST requests with JSON payload |
-| `/test/delay/{seconds}` | GET | Simulate response delays for testing |
+| `/api/environments` | GET | Whill show all environment variables |
+| `/api/debug-request` | All | Echo back request details (headers, body, method) |
+| `/custom-status?status={status}` | GET | Test GET requests with custom return status equal to the query parameter `status` value |
+| `/api/timeout?timeout={seconds}` | GET | Simulate response delays for testing |
 
-### Network & Connectivity
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/ping/{host}` | GET | Test connectivity to external hosts |
-| `/dns/{hostname}` | GET | DNS resolution testing |
-| `/proxy/{url}` | GET | Proxy requests to test service mesh |
-
-
-
-## 🔍 Use Cases
-
-### API Development Testing
-- **Parameter validation**: Test how your API handles different parameter combinations
-- **Query string debugging**: Inspect complex URL encoding scenarios
-- **Header analysis**: Verify custom headers are properly transmitted
-
-### Integration Testing
-- **Webhook testing**: Use as a target for webhook deliveries
-- **Load balancer verification**: Check request routing and header forwarding
-- **Proxy testing**: Verify proxy configurations and header modifications
-
-### Debugging Workflows
-- **Request inspection**: See exactly what your client is sending
-- **Parameter parsing**: Understand how complex query strings are interpreted
-- **Header debugging**: Analyze authentication headers and custom values
 
 ## 🏗️ Building from Source
 
