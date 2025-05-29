@@ -99,6 +99,12 @@ curl http://localhost:8080/api/environments
 # Returns all environment variables for debugging
 ```
 
+### DNS Debugging
+```bash
+curl http://localhost:8080/api/dns?hostname={hostname}
+# Returns all ipv4 record found as dns resolve result for debugging
+```
+
 ### Delay Testing
 ```bash
 curl http://localhost:8080/api/timeout?timeout=15
@@ -143,6 +149,7 @@ curl "http://localhost:8080/api/api/environments"
 |----------|--------|-------------|
 | `/api/environments` | GET | Whill show all environment variables |
 | `/api/debug-request` | All | Echo back request details (headers, body, method) |
+| `/api/dns?hostname={hostname}` | GET | Echo dns resolve results of ipv4 type |
 | `/custom-status?status={status}` | GET | Test GET requests with custom return status equal to the query parameter `status` value |
 | `/api/timeout?timeout={seconds}` | GET | Simulate response delays for testing |
 

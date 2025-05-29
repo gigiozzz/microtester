@@ -223,9 +223,11 @@ func DnsResolverHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//	oldEnv := os.Getenv("GODEBUG")
+	//	os.Setenv("GODEBUG", "netdns=go")
 	query := r.URL.Query()
 	hostname := query.Get("hostname")
-	ips, err := net.LookupIP("google.com")
+	ips, err := net.LookupIP(hostname)
 
 	success := true
 	status := "ok"
@@ -240,7 +242,14 @@ func DnsResolverHandler(w http.ResponseWriter, r *http.Request) {
 		value = err.Error()
 	} else {
 		sep := ""
+		fmt.Println("\n🔍 DNS DEBUG INFO")
+		fmt.Println("=====================")
+		fmt.Printf("Hostname: %s\n", hostname)
 		for id, ip := range ips {
+			fmt.Printf("ip: %s\n", ip)
+			if len(ip) != net.IPv4len {
+				continue
+			}
 			if id != 0 {
 				sep = " "
 			}
@@ -257,7 +266,7 @@ func DnsResolverHandler(w http.ResponseWriter, r *http.Request) {
 			key:         value,
 		},
 	}
-
+	//	os.Setenv("GODEBUG", oldEnv)
 	sendJSON(w, response, statusCode)
 
 }
