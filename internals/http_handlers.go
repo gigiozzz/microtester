@@ -3,6 +3,7 @@ package internals
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -214,4 +215,49 @@ func TimeoutHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	sendJSON(w, response, http.StatusOK)
+}
+
+func DnsResolverHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	query := r.URL.Query()
+	hostname := query.Get("hostname")
+	ips, err := net.LookupIP("google.com")
+
+	success := true
+	status := "ok"
+	statusCode := http.StatusOK
+	key := "ips"
+	value := ""
+	if err != nil {
+		success = false
+		status = "fail"
+		statusCode = http.StatusInternalServerError
+		key = "error"
+		value = err.Error()
+	} else {
+		sep := ""
+		for id, ip := range ips {
+			if id != 0 {
+				sep = " "
+			}
+			value = value + sep + ip.String()
+		}
+	}
+
+	response := map[string]any{
+		"Success": success,
+		"Data": map[string]any{
+			"status":    status,
+			"timestamp": time.Now().Unix(),
+			"hostname":  hostname,
+			key:         value,
+		},
+	}
+
+	sendJSON(w, response, statusCode)
+
 }

@@ -21,6 +21,7 @@ const (
 	ENVIRONMENTS_PATH   string = "/api/environments"
 	DEBUG_REQUEST_PATH  string = "/api/debug-request"
 	TIMEOUT_PATH        string = "/api/timeout"
+	DNS_PATH            string = "/api/dns"
 )
 
 func main() {
@@ -39,7 +40,73 @@ func main() {
 	mux.HandleFunc(ENVIRONMENTS_PATH, internals.EnvListHandler)
 	mux.HandleFunc(DEBUG_REQUEST_PATH, internals.DebugRequestHandler)
 	mux.HandleFunc(TIMEOUT_PATH, internals.TimeoutHandler)
+	mux.HandleFunc(DNS_PATH, internals.DnsResolverHandler)
 	// endpoint for OOM error
+	// finish readmme
+	// github workflow
+	/*
+
+			   [![GitHub release](https://img.shields.io/github/release/gigiozzz/microtester.svg)](https://github.com/gigiozzz/microtester/releases)
+			   [![Docker Image Size](https://img.shields.io/docker/image-size/gigiozzz/microtester/latest)](https://hub.docker.com/r/gigiozzz/microtester)
+			   [![Docker Pulls](https://img.shields.io/docker/pulls/gigiozzz/microtester)](https://hub.docker.com/r/gigiozzz/microtester)
+			   [![GitHub issues](https://img.shields.io/github/issues/gigiozzz/microtester)](https://github.com/gigiozzz/microtester/issues)
+			   [![GitHub stars](https://img.shields.io/github/stars/gigiozzz/microtester)](https://github.com/gigiozzz/microtester/stargazers)
+			   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+			   [![Build Status](https://img.shields.io/github/actions/workflow/status/gigiozzz/microtester/build.yml?branch=main)](https://github.com/gigiozzz/microtester/actions)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		### Testing Different HTTP Methods
+
+		ToDo
+		#```bash
+		#POST request (will return method not allowed, but you'll see the request details in logs)
+		#curl -X POST "http://localhost:3000/api/v1/debug/request?method=post"
+		#The debug endpoint only accepts GET, but server logs will show all request details
+		#```
+
+		### Network & Connectivity
+		| Endpoint | Method | Description |
+		|----------|--------|-------------|
+		| `/ping/{host}` | GET | Test connectivity to external hosts |
+		| `/dns/{hostname}` | GET | DNS resolution testing |
+		| `/proxy/{url}` | GET | Proxy requests to test service mesh |
+
+		## 🔍 Use Cases
+
+		### API Development Testing
+		- **Parameter validation**: Test how your API handles different parameter combinations
+		- **Query string debugging**: Inspect complex URL encoding scenarios
+		- **Header analysis**: Verify custom headers are properly transmitted
+
+		### Integration Testing
+		- **Webhook testing**: Use as a target for webhook deliveries
+		- **Load balancer verification**: Check request routing and header forwarding
+		- **Proxy testing**: Verify proxy configurations and header modifications
+
+		### Debugging Workflows
+		- **Request inspection**: See exactly what your client is sending
+		- **Parameter parsing**: Understand how complex query strings are interpreted
+		- **Header debugging**: Analyze authentication headers and custom values
+
+
+	*/
 
 	server := &http.Server{
 		Addr:    internals.GetEnvStringOrDefault(LISTEN_ADDR_KEY, LISTEN_ADDR_DEFAULT),
