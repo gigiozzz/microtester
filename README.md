@@ -3,8 +3,9 @@
 A lightweight REST API server built with Go's standard library, designed specifically for container deployment. MicroTester provides essential endpoints for testing, checking, and debugging HTTP requests and REST API deployments in containerized environments.
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-blue.svg)](https://golang.org)
-[![Docker](https://img.shields.io/badge/Docker-Multi--stage-blue.svg)](https://docs.docker.com/build/building/multi-stage/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-green.svg)](https://kubernetes.io/)
+[![Docker Image Size](https://img.shields.io/docker/image-size/gigiozzz/microtester/latest)](https://hub.docker.com/r/gigiozzz/microtester)
+[![Docker Pulls](https://img.shields.io/docker/pulls/gigiozzz/microtester)](https://hub.docker.com/r/gigiozzz/microtester)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## ✨ Features
@@ -99,7 +100,7 @@ curl "http://localhost:8080/api/api/environments"
 |----------|--------|-------------|
 | `/api/environments` | GET | Whill show all environment variables |
 | `/api/debug-request` | All | Echo back request details (headers, body, method) |
-| `/api/dns?hostname={hostname}` | GET | Echo dns resolve results of ipv4 type |
+| `/api/dns?hostname={hostname}` | GET | DNS resolution testing  |
 | `/custom-status?status={status}` | GET | Test GET requests with custom return status equal to the query parameter `status` value |
 | `/api/timeout?timeout={seconds}` | GET | Simulate response delays for testing |
 

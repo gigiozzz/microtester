@@ -41,8 +41,9 @@ func main() {
 	mux.HandleFunc(DEBUG_REQUEST_PATH, internals.DebugRequestHandler)
 	mux.HandleFunc(TIMEOUT_PATH, internals.TimeoutHandler)
 	mux.HandleFunc(DNS_PATH, internals.DnsResolverHandler)
+
 	// endpoint for OOM error
-	// finish readmme
+
 	// github workflow
 	/*
 
