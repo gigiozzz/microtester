@@ -25,58 +25,8 @@ docker run -p 8080:8080 gigiozzz/microtester
 ```
 
 ### Kubernetes
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: microtester
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: microtester
-  template:
-    metadata:
-      labels:
-        app: microtester
-    spec:
-      containers:
-      - name: microtester
-        image: gigiozzz/microtester:latest
-        env:
-        - name: PORT
-          value: "8080"
-        ports:
-        - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /api/v1/health
-            port: 8080
-          initialDelaySeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/v1/health
-            port: 8080
-          initialDelaySeconds: 5          
-        resources:
-          requests:
-            memory: "16Mi"
-            cpu: "10m"
-          limits:
-            memory: "64Mi"
-            cpu: "100m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: microtester-service
-spec:
-  selector:
-    app: microtester
-  ports:
-  - port: 80
-    targetPort: 8080
-  type: ClusterIP
+```bash
+kubectl -n your-namespace apply -f https://raw.githubusercontent.com/gigiozzz/microtester/refs/heads/main/manifest.yaml
 ```
 
 ## 📋 Examples
