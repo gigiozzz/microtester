@@ -1,7 +1,9 @@
 package internals
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -269,4 +271,66 @@ func DnsResolverHandler(w http.ResponseWriter, r *http.Request) {
 	//	os.Setenv("GODEBUG", oldEnv)
 	sendJSON(w, response, statusCode)
 
+}
+
+func HttpConnectionResolverHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	query := r.URL.Query()
+	url := query.Get("url")
+	success := true
+	status := "ok"
+	errorMsg := ""
+	statusCode := http.StatusOK
+
+	_, httpStatus, err := httpGetWithTimeout(url, 25)
+	if err != nil {
+		success = false
+		errorMsg = err.Error()
+		status = "fail"
+		statusCode = http.StatusInternalServerError
+	} else {
+		statusCode = httpStatus
+	}
+
+	response := map[string]any{
+		"Success": success,
+		"Data": map[string]any{
+			"status":     status,
+			"timestamp":  time.Now().Unix(),
+			"url":        url,
+			"statusCode": statusCode,
+			"errorMsg":   errorMsg,
+		},
+	}
+	sendJSON(w, response, statusCode)
+
+}
+
+func httpGetWithTimeout(url string, timeout int) (string, int, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", 0, err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", 0, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", 0, err
+	}
+
+	return string(body), resp.StatusCode, nil
 }

@@ -13,15 +13,16 @@ import (
 )
 
 const (
-	LISTEN_ADDR_KEY     string = "LISTEN_ADDR"
-	LISTEN_ADDR_DEFAULT string = ":8080"
-	HELATH_PATH_KEY     string = "HEALTH_PATH"
-	HELATH_PATH_DEFAULT string = "/healthz"
-	CUSTOM_STATUS_PATH  string = "/api/custom-status"
-	ENVIRONMENTS_PATH   string = "/api/environments"
-	DEBUG_REQUEST_PATH  string = "/api/debug-request"
-	TIMEOUT_PATH        string = "/api/timeout"
-	DNS_PATH            string = "/api/dns"
+	LISTEN_ADDR_KEY      string = "LISTEN_ADDR"
+	LISTEN_ADDR_DEFAULT  string = ":8080"
+	HELATH_PATH_KEY      string = "HEALTH_PATH"
+	HELATH_PATH_DEFAULT  string = "/healthz"
+	CUSTOM_STATUS_PATH   string = "/api/custom-status"
+	ENVIRONMENTS_PATH    string = "/api/environments"
+	DEBUG_REQUEST_PATH   string = "/api/debug-request"
+	TIMEOUT_PATH         string = "/api/timeout"
+	DNS_PATH             string = "/api/dns"
+	TEST_CONNECTION_PATH string = "/api/http-connection"
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	mux.HandleFunc(DEBUG_REQUEST_PATH, internals.DebugRequestHandler)
 	mux.HandleFunc(TIMEOUT_PATH, internals.TimeoutHandler)
 	mux.HandleFunc(DNS_PATH, internals.DnsResolverHandler)
+	mux.HandleFunc(TEST_CONNECTION_PATH, internals.HttpConnectionResolverHandler)
 
 	// endpoint for OOM error
 
@@ -48,8 +50,6 @@ func main() {
 	/*
 
 			   [![GitHub release](https://img.shields.io/github/release/gigiozzz/microtester.svg)](https://github.com/gigiozzz/microtester/releases)
-			   [![Docker Image Size](https://img.shields.io/docker/image-size/gigiozzz/microtester/latest)](https://hub.docker.com/r/gigiozzz/microtester)
-			   [![Docker Pulls](https://img.shields.io/docker/pulls/gigiozzz/microtester)](https://hub.docker.com/r/gigiozzz/microtester)
 			   [![GitHub issues](https://img.shields.io/github/issues/gigiozzz/microtester)](https://github.com/gigiozzz/microtester/issues)
 			   [![GitHub stars](https://img.shields.io/github/stars/gigiozzz/microtester)](https://github.com/gigiozzz/microtester/stargazers)
 			   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -86,8 +86,6 @@ func main() {
 		| Endpoint | Method | Description |
 		|----------|--------|-------------|
 		| `/ping/{host}` | GET | Test connectivity to external hosts |
-		| `/dns/{hostname}` | GET | DNS resolution testing |
-		| `/proxy/{url}` | GET | Proxy requests to test service mesh |
 
 		## 🔍 Use Cases
 
