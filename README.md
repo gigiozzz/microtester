@@ -68,6 +68,12 @@ curl "http://localhost:8080/api/custom-status?status=405"
 # Returns 405 http status
 ```
 
+### Testing HTTP GET connection to an url
+```bash
+curl "http://localhost:8080/api/http-connection?url=https://www.google.com/search?q=microtester"
+# Returns 200 or 500 as http status with details in the body
+```
+
 ### Testing in Kubernetes
 ```bash
 # Port forward to access locally
@@ -103,7 +109,7 @@ curl "http://localhost:8080/api/api/environments"
 | `/api/dns?hostname={hostname}` | GET | DNS resolution testing  |
 | `/custom-status?status={status}` | GET | Test GET requests with custom return status equal to the query parameter `status` value |
 | `/api/timeout?timeout={seconds}` | GET | Simulate response delays for testing |
-
+| `/api/http-connection?url={url}` | GET | Execute an HTTP GET connection to an url |
 
 ## 🏗️ Building from Source
 
