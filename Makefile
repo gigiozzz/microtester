@@ -29,7 +29,7 @@ help: ## Show this help message
 check-deps: ## Check if required tools are installed
 	@echo "$(GREEN)Checking dependencies...$(NC)"
 	@command -v docker >/dev/null 2>&1 || { echo "$(RED)Docker is required but not installed$(NC)"; exit 1; }
-# @command -v git >/dev/null 2>&1 || { echo "$(RED)Git is required but not installed$(NC)"; exit 1; }
+	@command -v git >/dev/null 2>&1 || { echo "$(RED)Git is required but not installed$(NC)"; exit 1; }
 	@echo "$(GREEN)✓ All dependencies found$(NC)"
 
 # Initialize go module if not exists
@@ -50,15 +50,15 @@ run-dev: ## Run application locally
 	go run main.go
 
 # Docker operations
-#build: check-deps ## Build Docker image for development
-#	@echo "$(GREEN)Building Docker image: $(TAGGED_IMAGE)$(NC)"
-#	docker build -t $(TAGGED_IMAGE) -t $(LATEST_IMAGE) .
-#	@echo "$(GREEN)✓ Build completed$(NC)"
-#
-#build-dev: check-deps ## Build Docker image with development settings
-#	@echo "$(GREEN)Building development Docker image...$(NC)"
-#	docker build --target builder -t $(IMAGE_NAME):dev .
-#	@echo "$(GREEN)✓ Development build completed$(NC)"
+build: check-deps ## Build Docker image for development
+	@echo "$(GREEN)Building Docker image: $(TAGGED_IMAGE)$(NC)"
+	docker build -t $(TAGGED_IMAGE) -t $(LATEST_IMAGE) .
+	@echo "$(GREEN)✓ Build completed$(NC)"
+
+build-dev: check-deps ## Build Docker image with development settings
+	@echo "$(GREEN)Building development Docker image...$(NC)"
+	docker build --target builder -t $(IMAGE_NAME):dev .
+	@echo "$(GREEN)✓ Development build completed$(NC)"
 
 build-prod: check-deps ## Build optimized production image
 	@echo "$(GREEN)Building production Docker image: $(TAGGED_IMAGE)$(NC)"
@@ -80,22 +80,21 @@ build-prod: check-deps ## Build optimized production image
 #	@echo "$(GREEN)✓ Multi-architecture build and push completed$(NC)"
 
 # Docker registry operations
+push: build docker-login ## Build and push versioned image
+	@echo "$(GREEN)Pushing image: $(TAGGED_IMAGE)$(NC)"
+	docker push $(TAGGED_IMAGE)
+	@echo "$(GREEN)✓ Push completed$(NC)"
 
-#push: build docker-login ## Build and push versioned image
-#	@echo "$(GREEN)Pushing image: $(TAGGED_IMAGE)$(NC)"
-#	docker push $(TAGGED_IMAGE)
-#	@echo "$(GREEN)✓ Push completed$(NC)"
-
-push-latest: push ## Push both versioned and latest tags
+push-latest: build-prod ## Push both versioned and latest tags
 	@echo "$(GREEN)Pushing latest image: $(LATEST_IMAGE)$(NC)"
 	docker push $(LATEST_IMAGE)
 	@echo "$(GREEN)✓ Latest push completed$(NC)"
 
-#push-all: build-prod docker-login ## Build and push all tags
-#	@echo "$(GREEN)Pushing all images...$(NC)"
-#	docker push $(TAGGED_IMAGE)
-#	docker push $(LATEST_IMAGE)
-#	@echo "$(GREEN)✓ All images pushed$(NC)"
+push-all: build-prod docker-login ## Build and push all tags
+	@echo "$(GREEN)Pushing all images...$(NC)"
+	docker push $(TAGGED_IMAGE)
+	docker push $(LATEST_IMAGE)
+	@echo "$(GREEN)✓ All images pushed$(NC)"
 
 # Information
 info: ## Show build information
