@@ -13,31 +13,28 @@ import (
 )
 
 const (
-	LISTEN_ADDR_KEY      string = "LISTEN_ADDR"
-	LISTEN_ADDR_DEFAULT  string = ":8080"
-	HELATH_PATH_KEY      string = "HEALTH_PATH"
-	HELATH_PATH_DEFAULT  string = "/healthz"
-	CUSTOM_STATUS_PATH   string = "/api/custom-status"
-	ENVIRONMENTS_PATH    string = "/api/environments"
-	DEBUG_REQUEST_PATH   string = "/api/debug-request"
-	TIMEOUT_PATH         string = "/api/timeout"
-	DNS_PATH             string = "/api/dns"
-	TEST_CONNECTION_PATH string = "/api/http-connection"
+	LISTEN_ADDR_KEY               string = "LISTEN_ADDR"
+	LISTEN_ADDR_DEFAULT           string = ":8080"
+	HELATH_PATH_KEY               string = "HEALTH_PATH"
+	HELATH_PATH_DEFAULT           string = "/healthz"
+	CUSTOM_METHOD_AND_STATUS_PATH string = "/api/custom-method-and-status"
+	ENVIRONMENTS_PATH             string = "/api/environments"
+	DEBUG_REQUEST_PATH            string = "/api/debug-request"
+	TIMEOUT_PATH                  string = "/api/timeout"
+	DNS_PATH                      string = "/api/dns"
+	TEST_CONNECTION_PATH          string = "/api/http-connection"
 )
 
 func main() {
 	// Setup routes
 	mux := http.NewServeMux()
 	handler := internals.LoggingMiddleware(mux)
-	/*
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			mux.ServeHTTP(w, r)
-		})
-	*/
+
 	// Health check
 	mux.HandleFunc(internals.GetEnvStringOrDefault(HELATH_PATH_KEY, HELATH_PATH_DEFAULT), internals.HealthHandler)
 
-	mux.HandleFunc(CUSTOM_STATUS_PATH, internals.CustomStatusHandler)
+	mux.HandleFunc(CUSTOM_METHOD_AND_STATUS_PATH, internals.CustomStatusHandler)
+	mux.HandleFunc(CUSTOM_METHOD_AND_STATUS_PATH+"/*", internals.CustomStatusHandler)
 	mux.HandleFunc(ENVIRONMENTS_PATH, internals.EnvListHandler)
 	mux.HandleFunc(DEBUG_REQUEST_PATH, internals.DebugRequestHandler)
 	mux.HandleFunc(TIMEOUT_PATH, internals.TimeoutHandler)

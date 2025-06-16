@@ -62,9 +62,10 @@ curl http://localhost:8080/api/timeout?timeout=15
 # Waits 15 seconds before responding
 ```
 
-### Testing Different HTTP Statuses
+### Testing Different HTTP Methods and Statuses
 ```bash
-curl "http://localhost:8080/api/custom-status?status=405"
+curl "http://localhost:8080/api/custom-method-and-status?status=405"
+curl "http://localhost:8080/api/custom-method-and-status/any-path-you-need?status=405"
 # Returns 405 http status
 ```
 
@@ -107,7 +108,8 @@ curl "http://localhost:8080/api/api/environments"
 | `/api/environments` | GET | Whill show all environment variables |
 | `/api/debug-request` | All | Echo back request details (headers, body, method) |
 | `/api/dns?hostname={hostname}` | GET | DNS resolution testing  |
-| `/custom-status?status={status}` | GET | Test GET requests with custom return status equal to the query parameter `status` value |
+| `/custom-method-and-status?status={status}` | All | Test HTTP requests with any method and with custom return status equal to the query parameter `status` value, default status 200 |
+| `/custom-method-and-status/{any-path-you-need}-?status={status}` | All | Test HTTP requests with any method and with custom return status equal to the query parameter `status` value, default status 200 |
 | `/api/timeout?timeout={seconds}` | GET | Simulate response delays for testing |
 | `/api/http-connection?url={url}` | GET | Execute an HTTP GET connection to an url |
 

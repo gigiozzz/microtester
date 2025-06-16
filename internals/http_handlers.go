@@ -32,10 +32,7 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CustomStatusHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		sendError(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+
 	query := r.URL.Query()
 	success := false
 	successStr := "fail"
