@@ -62,9 +62,10 @@ curl http://localhost:8080/api/timeout?timeout=15
 # Waits 15 seconds before responding
 ```
 
-### Testing Different HTTP Methods and Statuses
+### Testing Different HTTP Methods and Statuses with custom sub-path
 ```bash
 curl "http://localhost:8080/api/custom-method-and-status?status=405"
+# or with custom sub-path
 curl "http://localhost:8080/api/custom-method-and-status/any-path-you-need?status=405"
 # Returns 405 http status
 ```
@@ -118,7 +119,7 @@ curl "http://localhost:8080/api/api/environments"
 ```bash
 git clone https://github.com/gigiozzz/microtester.git
 cd microtester
-docker build -t microtester .
+make build
 ```
 
 ## 🤝 Contributing

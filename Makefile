@@ -34,10 +34,10 @@ check-deps: ## Check if required tools are installed
 
 # Initialize go module if not exists
 init: ## Initialize Go module
-#	@if [ ! -f go.mod ]; then \
-#		echo "$(YELLOW)Initializing Go module...$(NC)"; \
-#		go mod init $(APP_NAME); \
-#	fi
+	@if [ ! -f go.mod ]; then \
+		echo "$(YELLOW)Initializing Go module...$(NC)"; \
+		go mod init $(APP_NAME); \
+	fi
 	@go mod tidy
 
 # Local development
@@ -69,15 +69,15 @@ build-prod: check-deps ## Build optimized production image
 		-t $(LATEST_IMAGE) .
 	@echo "$(GREEN)✓ Production build completed$(NC)"
 
-#build-multi: check-deps ## Build multi-architecture image
-#	@echo "$(GREEN)Building multi-architecture image...$(NC)"
-#	docker buildx create --use --name multiarch-builder 2>/dev/null || true
-#	docker buildx build \
-#		$(DOCKER_BUILD_ARGS) \
-#		-t $(TAGGED_IMAGE) \
-#		-t $(LATEST_IMAGE) \
-#		--push .
-#	@echo "$(GREEN)✓ Multi-architecture build and push completed$(NC)"
+build-multi: check-deps ## Build multi-architecture image
+	@echo "$(GREEN)Building multi-architecture image...$(NC)"
+	docker buildx create --use --name multiarch-builder 2>/dev/null || true
+	docker buildx build \
+		$(DOCKER_BUILD_ARGS) \
+		-t $(TAGGED_IMAGE) \
+		-t $(LATEST_IMAGE) \
+		--push .
+	@echo "$(GREEN)✓ Multi-architecture build and push completed$(NC)"
 
 # Docker registry operations
 push: build docker-login ## Build and push versioned image
